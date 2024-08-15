@@ -7,6 +7,14 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app
 
+# Install curl
+RUN apt-get update
+RUN apt-get install -y curl
+
+# Install ollama
+RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/bin/ollama
+RUN chmod u+x /usr/bin/ollama
+
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -15,6 +23,7 @@ EXPOSE 5000
 
 # Define environment variable
 ENV FLASK_APP=Controller.py
+ENV OLLAMA_HOST=http://ollama:11434
 
 # Run llama_api.py when the container launches
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+ENTRYPOINT ["./entrypoint.sh"]
